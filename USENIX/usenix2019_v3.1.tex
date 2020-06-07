@@ -114,16 +114,21 @@ month = feb,
 @misc{3DXPoint,
   author = {Intel},
   title = {Intel and micron produce breakthrough memory technology.},
-  howpublished = {
-  \url{https://newsroom.intel.com/news-releases/intel-and-micronproduce-
-breakthrough-memory-technology/}
-  }
+  note =  {\url{https://newsroom.intel.com/news-releases/intel-and-micronproduce-
+breakthrough-memory-technology/}}
 }
 @misc{NVMRocks,
   author = {NVMRocks},
   title = {RocksDB on Non-Volatile Memory Systems},
   howpublished = {
   \url{http://istc-bigdata.org/index.php/nvmrocks-rocksdb-on-non-volatilememory-systems/}
+  }
+}
+@misc{RocksDB,
+  author = {RocksDB},
+  title = {RocksDB},
+  howpublished = {
+  \url{https://rocksdb.org/}
   }
 }
 @inproceedings{DBLP:conf/usenix/XiaJXS17,
@@ -133,7 +138,7 @@ breakthrough-memory-technology/}
                Ninghui Sun},
   editor    = {Dilma Da Silva and
                Bryan Ford},
-  title     = {HiKV: {A} Hybrid Index Key-Value Store for {DRAM-NVM} Memory Systems},
+  title     = {{HiKV}: {A} Hybrid Index Key-Value Store for {DRAM-NVM} Memory Systems},
   booktitle = {2017 {USENIX} Annual Technical Conference, {USENIX} {ATC} 2017, Santa
                Clara, CA, USA, July 12-14, 2017},
   pages     = {349--362},
@@ -182,6 +187,77 @@ breakthrough-memory-technology/}
   biburl    = {https://dblp.org/rec/conf/usenix/KannanBGAA18.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
+@article{LSM-tree,
+  author    = {Patrick E. O'Neil and
+               Edward Cheng and
+               Dieter Gawlick and
+               Elizabeth J. O'Neil},
+  title     = {The Log-Structured Merge-Tree (LSM-Tree)},
+  journal   = {Acta Inf.},
+  volume    = {33},
+  number    = {4},
+  pages     = {351--385},
+  year      = {1996},
+  url       = {https://doi.org/10.1007/s002360050048},
+  doi       = {10.1007/s002360050048},
+  timestamp = {Wed, 14 Nov 2018 10:14:19 +0100},
+  biburl    = {https://dblp.org/rec/journals/acta/ONeilCGO96.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{WiscKey,
+  author    = {Lanyue Lu and
+               Thanumalayan Sankaranarayana Pillai and
+               Andrea C. Arpaci{-}Dusseau and
+               Remzi H. Arpaci{-}Dusseau},
+  editor    = {Angela Demke Brown and
+               Florentina I. Popovici},
+  title     = {WiscKey: Separating Keys from Values in SSD-conscious Storage},
+  booktitle = {14th {USENIX} Conference on File and Storage Technologies, {FAST}
+               2016, Santa Clara, CA, USA, February 22-25, 2016},
+  pages     = {133--148},
+  publisher = {{USENIX} Association},
+  year      = {2016},
+  url       = {https://www.usenix.org/conference/fast16/technical-sessions/presentation/lu},
+  timestamp = {Tue, 01 Mar 2016 15:34:23 +0100},
+  biburl    = {https://dblp.org/rec/conf/fast/LuPAA16.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{NVMKV,
+  author    = {Leonardo M{\'{a}}rmol and
+               Swaminathan Sundararaman and
+               Nisha Talagala and
+               Raju Rangaswami},
+  editor    = {Shan Lu and
+               Erik Riedel},
+  title     = {{NVMKV:} {A} Scalable, Lightweight, FTL-aware Key-Value Store},
+  booktitle = {2015 {USENIX} Annual Technical Conference, {USENIX} {ATC} '15, July
+               8-10, Santa Clara, CA, {USA}},
+  pages     = {207--219},
+  publisher = {{USENIX} Association},
+  year      = {2015},
+  url       = {https://www.usenix.org/conference/atc15/technical-session/presentation/marmol},
+  timestamp = {Fri, 08 Jul 2016 13:19:10 +0200},
+  biburl    = {https://dblp.org/rec/conf/usenix/MarmolSTR15.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{PebblesDB,
+  author    = {Pandian Raju and
+               Rohan Kadekodi and
+               Vijay Chidambaram and
+               Ittai Abraham},
+  title     = {PebblesDB: Building Key-Value Stores using Fragmented Log-Structured
+               Merge Trees},
+  booktitle = {Proceedings of the 26th Symposium on Operating Systems Principles,
+               Shanghai, China, October 28-31, 2017},
+  pages     = {497--514},
+  publisher = {{ACM}},
+  year      = {2017},
+  url       = {https://doi.org/10.1145/3132747.3132765},
+  doi       = {10.1145/3132747.3132765},
+  timestamp = {Tue, 06 Nov 2018 16:59:32 +0100},
+  biburl    = {https://dblp.org/rec/conf/sosp/RajuKCA17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
 \end{filecontents}
 
 %-------------------------------------------------------------------------------
@@ -192,16 +268,18 @@ breakthrough-memory-technology/}
 \date{}
 
 % make title bold and 14 pt font (Latex default is non-bold, 16 pt)
-\title{\Large \bf Formatting Submissions for a USENIX Conference:\\
-  An (Incomplete) Example}
+\title{\Large \bf Improving RocksDB via cache and persistent memory}
 
 %for single author (just remove % characters)
 \author{
-{\rm Your N.\ Here}\\
-Your Institution
+{\rm Jiannan Cheng}\\
+Shanghai Jiaotong University
 \and
-{\rm Second Name}\\
-Second Institution
+{\rm Yue Chen}\\
+Shanghai Jiaotong University
+\and
+{\rm Zhicheng Wu}\\
+Shanghai Jiaotong University
 % copy the following lines to add more authors
 % \and
 % {\rm Name}\\
