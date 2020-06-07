@@ -62,22 +62,6 @@
 %-------------------------------------------------------------------------------
 \begin{filecontents}{\jobname.bib}
 %-------------------------------------------------------------------------------
-@Book{arpachiDusseau18:osbook,
-  author =       {Arpaci-Dusseau, Remzi H. and Arpaci-Dusseau Andrea C.},
-  title =        {Operating Systems: Three Easy Pieces},
-  publisher =    {Arpaci-Dusseau Books, LLC},
-  year =         2015,
-  edition =      {1.00},
-  note =         {\url{http://pages.cs.wisc.edu/~remzi/OSTEP/}}
-}
-@InProceedings{waldspurger02,
-  author =       {Waldspurger, Carl A.},
-  title =        {Memory resource management in {VMware ESX} server},
-  booktitle =    {USENIX Symposium on Operating System Design and
-                  Implementation (OSDI)},
-  year =         2002,
-  pages =        {181--194},
-  note =         {\url{https://www.usenix.org/legacy/event/osdi02/tech/waldspurger/waldspurger.pdf}}}
 @inproceedings {SLMDB,
 author = {Olzhas Kaiyrakhmet and Songyi Lee and Beomseok Nam and Sam H. Noh and Young-ri Choi},
 title = {SLM-DB: Single-Level Key-Value Store with Persistent Memory},
@@ -129,6 +113,13 @@ breakthrough-memory-technology/}}
   title = {RocksDB},
   howpublished = {
   \url{https://rocksdb.org/}
+  }
+}
+@misc{LevelDB,
+  author = {Google},
+  title = {LevelDB},
+  howpublished = {
+  \url{https://github.com/google/leveldb}
   }
 }
 @inproceedings{DBLP:conf/usenix/XiaJXS17,
@@ -256,6 +247,54 @@ breakthrough-memory-technology/}}
   doi       = {10.1145/3132747.3132765},
   timestamp = {Tue, 06 Nov 2018 16:59:32 +0100},
   biburl    = {https://dblp.org/rec/conf/sosp/RajuKCA17.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{Dynamo,
+  author    = {Giuseppe DeCandia and
+               Deniz Hastorun and
+               Madan Jampani and
+               Gunavardhan Kakulapati and
+               Avinash Lakshman and
+               Alex Pilchin and
+               Swaminathan Sivasubramanian and
+               Peter Vosshall and
+               Werner Vogels},
+  editor    = {Thomas C. Bressoud and
+               M. Frans Kaashoek},
+  title     = {Dynamo: amazon's highly available key-value store},
+  booktitle = {Proceedings of the 21st {ACM} Symposium on Operating Systems Principles
+               2007, {SOSP} 2007, Stevenson, Washington, USA, October 14-17, 2007},
+  pages     = {205--220},
+  publisher = {{ACM}},
+  year      = {2007},
+  url       = {https://doi.org/10.1145/1294261.1294281},
+  doi       = {10.1145/1294261.1294281},
+  timestamp = {Wed, 14 Nov 2018 10:55:11 +0100},
+  biburl    = {https://dblp.org/rec/conf/sosp/DeCandiaHJKLPSVV07.bib},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+@inproceedings{Bigtable,
+  author    = {Fay Chang and
+               Jeffrey Dean and
+               Sanjay Ghemawat and
+               Wilson C. Hsieh and
+               Deborah A. Wallach and
+               Michael Burrows and
+               Tushar Chandra and
+               Andrew Fikes and
+               Robert Gruber},
+  editor    = {Brian N. Bershad and
+               Jeffrey C. Mogul},
+  title     = {Bigtable: {A} Distributed Storage System for Structured Data (Awarded
+               Best Paper!)},
+  booktitle = {7th Symposium on Operating Systems Design and Implementation {(OSDI}
+               '06), November 6-8, Seattle, WA, {USA}},
+  pages     = {205--218},
+  publisher = {{USENIX} Association},
+  year      = {2006},
+  url       = {http://www.usenix.org/events/osdi06/tech/chang.html},
+  timestamp = {Wed, 04 Jul 2018 13:06:35 +0200},
+  biburl    = {https://dblp.org/rec/conf/osdi/ChangDGHWBCFG06.bib},
   bibsource = {dblp computer science bibliography, https://dblp.org}
 }
 \end{filecontents}
