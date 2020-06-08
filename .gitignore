@@ -1,7 +1,6 @@
 
 *.log
 *.gz
-*.pdf
 *.out
 *.blg
 *.bbl
