@@ -1,0 +1,36 @@
+\section{Persistent Memtable}
+In Rock-DB, MemTable is a skiplist stored in DRAM, which is not persistent. It adopts a Write Ahead Log(WAL) for system consistency. WAL includes the key -value pairs ,their version and their checksum. It is sequentially appended in the persistent storage before written in the MemTable . However, the overheads of WAL become the bottleneck of write operations and it takes rather long time to recover from crash. 
+
+Based on the above problems, we adopt persistent memory for optimization. 
+The memtable is stored in persistent memory ,which avoids the overheads of WAL for consistency and durability. 
+We adopt  $mfence()$ to achieve instruction serialization and $clflush()$ to guarantee that data in cache is flushed into persistent memory and can be recovered under failure. 
+Algorithm 1 shows the insert operation. Other operations such as update and delete can also be achieved by atomic write operation.
+
+\begin{algorithm}[t]
+    \caption{Insert(key, value, version,preNode)} %算法的名字
+   
+    
+    currentNode:=new Node(key,value,version);
+    
+    mfence();
+    
+    currentNode.next=preNode.next;
+    
+    clflush(currentNode);
+    
+    mfence();
+    
+    preNode.next:=currentNode;
+    
+    clflush(preNode.next);
+    
+    mfence();
+
+   
+    \end{algorithm}
+
+Once the system fails, 
+we can simply recover the skiplist by locate the root of skiplist, 
+the address of which is stored in the MANIFEST file. 
+Because the data has already stored in persistent memory , 
+it will be quick compared with recovering from WAL.
