@@ -1,19 +1,20 @@
 %-------------------------------------------------------------------------------
-
-\section{Our Solution}
-This section presents the design and implementation of our PC-DB, figure 2 shows the overall system architecture of PC-DB. PC-DB makes a trade-off between the performance and the consistency, it leverages PM to  store MemTable and Immutable Memtable. In this way, we make Memtable and Immutable Memtable persistent ,thus eliminating the write ahead log(WAL). RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
+\section{design and Implementation of PC-DB}
+This section presents the design and implementation of our work PC-DB, figure 2 shows the overall system architecture of PC-DB. PC-DB makes a trade-off between the performance and the consistency, it leverages PM to  store MemTable and Immutable Memtable. In this way, we make Memtable and Immutable Memtable persistent ,thus eliminating the write ahead log(WAL). RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
 
 Using persistent memory to replace DRAM, we can get a comparable read performance. However, there is a rather high write latency gap between the persistent memory and the DRAM: about 10x. We observe that in RocksDB, the minimum sequence number in memory and global sequence are used to determine whether to validate in memory in OCC, but this validation will bring much more latency in our PC-DB, which replacing the DRAM with the persistent memory. To solve this problem, we use DRAM-based cache to store the outstanding txn version, thus improving the read amplification and reducing transaction abort rate.
 
 With the processing of the PC-DB, the DRAM will be full. We should expel the version of the records when txn is finished. PC-DB has some strategies to expel the version of the records. One strategy is to set a timestamp for each record. Once we need to expel some records, we can choose these records which are timeout. There is another strategy in PC-DB to expel records, which is based on the write and read rate of pages. We divide the pages in the DRAM into cold-pages and hot-pages according to the write-read rate of the pages, and if some records need to be expelled, we choose to expel the cold pages.
 
 \subsection{Persistent MemTable}
-n Rock-DB, MemTable is a skiplist stored in DRAM, which is not persistent. It adopts a Write Ahead Log(WAL) for system consistency. WAL includes the key -value pairs ,their version and their checksum. It is sequentially appended in the persistent storage before written in the MemTable . However, the overheads of WAL become the bottleneck of write operations and it takes rather long time to recover from crash. 
+In Rock-DB, MemTable is a skiplist stored in DRAM, which is not persistent. It adopts a Write Ahead Log(WAL) for system consistency. WAL includes the key -value pairs ,their version and their checksum,which is sequentially appended in the persistent storage . 
+However, the overheads of WAL become the bottleneck of write operations and it takes rather long time to recover from crash. 
 
 Based on the above problems, we adopt persistent memory for optimization. 
-The memtable is stored in persistent memory ,which avoids the overheads of WAL for consistency and durability. The MemTable is a persistent skiplist, which is the same as the MemTable in the RocksDB. As we have talked before, the PM support atomic writes of 8 bytes, and in the skiplist, operations like inseration, update, and deletion can be done using an atomic 8 bytes write operation.
+The memtable is stored in persistent memory ,which avoids the overheads of WAL for consistency and durability. 
+The MemTable is a persistent skiplist, which is the same data structure in  RocksDB. As we have talked before, the PM support atomic writes of 8 bytes, and in the skiplist, operations like inseration, update, and deletion can be done using an atomic 8 bytes write operation.
 We adopt  $mfence()$ to achieve instruction serialization and $clflush()$ to guarantee that data in cache is flushed into persistent memory and can be recovered under failure. 
-Algorithm 1 shows the insert operation. Other operations such as update and delete can also be achieved by atomic write operation.
+Algorithm 1 shows the insert operation. Other operations such as update and delete can also be achieved by logical insert operation.
 
 \begin{algorithm}[t]
 \caption{Insert(key, value, version,preNode)} %算法的名字
@@ -38,7 +39,7 @@ mfence();
 \end{algorithm}
 
 Once the system fails, 
-we can simply recover the skiplist by locate the root of skiplist, 
+the skiplist can be recovered  by locating the root of skiplist, 
 the address of which is stored in the MANIFEST file. The files representing a PM pool is also remaped ,and retrieves the root data structure that stores all pointers to other data structures such as the MemTable, the Immutable MemTable through the support from a PM manager such as the PMDK. In the recovery process, the PC-DB will also flush the Immutable MemTable if there exits one.
 Because the data has already stored in persistent memory , 
 it will be quick compared with recovering from WAL.
