@@ -1,8 +1,21 @@
 %-------------------------------------------------------------------------------
-\section{design and Implementation of PC-DB}
-This section presents the design and implementation of our work PC-DB, figure 2 shows the overall system architecture of PC-DB. PC-DB makes a trade-off between the performance and the consistency, it leverages PM to  store MemTable and Immutable Memtable. In this way, we make Memtable and Immutable Memtable persistent ,thus eliminating the write ahead log(WAL). RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
+\section{Design and Implementation of PC-DB}
+This section presents the design and implementation of our work PC-DB, figure 2 shows the overall system architecture of PC-DB. 
+PC-DB makes a trade-off between the performance and the consistency, it leverages PM to  store MemTable and Immutable Memtable. 
+In this way, the Memtable and Immutable Memtable are persistent ,thus eliminating the write ahead log(WAL). 
+RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, 
+so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
 
-Using persistent memory to replace DRAM, we can get a comparable read performance. However, there is a rather high write latency gap between the persistent memory and the DRAM: about 10x. We observe that in RocksDB, the minimum sequence number in memory and global sequence are used to determine whether to validate in memory in OCC, but this validation will bring much more latency in our PC-DB, which replacing the DRAM with the persistent memory. To solve this problem, we use DRAM-based cache to store the outstanding txn version, thus improving the read amplification and reducing transaction abort rate.
+RocksDB adopts OCC\ref{OCC} for transaction serialization.
+For OCC, verification of records on disk is slow due to the multiple levels on the disk. 
+RocksDB uses the minimum sequence number in memory and global sequence to determine whether to validate in memory. 
+If the sequence is not in memory, the transaction will abort to avoid disk access. 
+In order to optimize the read amplification problem and reduce the probability of transaction abort, 
+we use DRAM-based cache to maintain the sequence number of outstanding transactions, 
+so that we only need to validate the sequence number in cache in the validation phase.
+
+ To solve this problem, we use DRAM-based cache to store the outstanding txn version, 
+ thus improving the read amplification and reducing transaction abort rate.
 
 With the processing of the PC-DB, the DRAM will be full. We should expel the version of the records when txn is finished. PC-DB has some strategies to expel the version of the records. One strategy is to set a timestamp for each record. Once we need to expel some records, we can choose these records which are timeout. There is another strategy in PC-DB to expel records, which is based on the write and read rate of pages. We divide the pages in the DRAM into cold-pages and hot-pages according to the write-read rate of the pages, and if some records need to be expelled, we choose to expel the cold pages.
 
