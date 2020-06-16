@@ -1,10 +1,4 @@
 %-------------------------------------------------------------------------------
 \section{Conclusion}
 %-------------------------------------------------------------------------------
-
-A paragraph of text goes here. Lots of text. Plenty of interesting
-text. Text text text text text text text text text text text text text
-text text text text text text text text text text text text text text
-text text text text text text text text text text text text text text
-text text text text text text text.
-More fascinating text. Features galore, plethora of promises.
+In this paper, we presented the Persistent-Consistent DB(PC-DB) that use PM to store the MemTable and Immutable MemTable, thus providing faster recovery and better consistency. At the same time, PC-DB make use of the DRAM as a cache for outstanding transaction version, solving the problem of the read amplification in the validation phase of OCC. Our experiments shows that PC-DB performs well in the  YCSB, which are real world workload benchmarks.
