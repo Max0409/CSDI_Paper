@@ -9,7 +9,7 @@ To evaluate the performance of the two database, we use the db$_$bench benchmark
 Generally our design can be divided into two parts: to get better consistency in exchange of performance, we use PM to replace DRAM; and to improve the read amplification in the validation phase in OCC, we use DRAM to store the outstanding transaction version. In order to better understand what is the effect of the two strategy, we first evaluate the performance of RocksDB,  a modified version of RocksDB by replacing the DRAM using PM, and the PC-DB. Figure 5 shows the expected performance of this evaluation for the random write workload form db$\_$bench over various value sizes. The write latency and total amount of data written to disk is normalized to these of RocksDB.
 \begin{figure}
     \centering
-    \includegraphics[width=0.36\paperwidth]{USENIX/figure/Randomwrite.png}
+    \includegraphics[width=0.36\paperwidth]{figure/Randomwrite.png}
     \caption{Random write performance comparison}
     \label{fig:randomwrite}
 \end{figure}
@@ -20,7 +20,7 @@ For the random write operations, PC-DB provides almost the same throughput as th
 For the random operations, PC-DB also shows a similar performance as RocksDB. This because the read latency of PM is almost the same as that of DRAM, and if PC-DB can not get the key in PM, it will search the disk for the recoed, just like the RocksDB.
 \begin{figure}
     \centering
-    \includegraphics[width=0.36\paperwidth]{USENIX/figure/Throughput.png}
+    \includegraphics[width=0.36\paperwidth]{figure/Throughput.png}
     \caption{Throughput of PC-DB normalized to RocksDB}
     \label{fig:throughput}
 \end{figure}
@@ -28,7 +28,7 @@ For the random operations, PC-DB also shows a similar performance as RocksDB. Th
 YCSB consists of six workloads that capture different real world scenarios. To run the YCSB workloads, we modify db$\_$bench to run YCSB workload traces for various value sizes. Figures 7(a), 7(b) and 7(c) show the operation throughput, latency, and the total amount of write with SLM-DB, normalized to those with RocksDB over the six YCSB workloads [17]. For each workload, the cumulative amount of write is measured when the workload finishes. For the results, we load the database for workload A by inserting KVs, and continuously run workload A, workload B, workload C, workload F, and workload D in order. We then delete the database, and reload the database to run workload E. Workload A performs $50\%$ reads and $50\%$ updates, Workload B performs $95\%$ reads and $5\%$ updates, Workload C performs $100\%$ reads, and Workload F performs $50\%$ reads and $50\%$ read modify-writes. For these workloads, Zipfian distribution is used. Workload D performs $95\%$ reads for the latest keys and $5\%$ inserts. Workload E performs $95\%$ range query and $5\%$ inserts with Zipfian distribution.
 \begin{figure}
     \centering
-    \includegraphics[width=0.36\paperwidth]{USENIX/figure/YCSB performance.png}
+    \includegraphics[width=0.36\paperwidth]{figure/YCSB performance.png}
     \caption{YCSB performance }
     \label{fig:YCSB}
 \end{figure}

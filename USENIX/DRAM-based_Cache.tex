@@ -3,7 +3,7 @@ PC-DB uses DRAM as the cache of outstanding transaction version to speed up the 
 There are two main methods to mix PM and DRAM memory. The first method is to use DRAM as the cache of PM, and the other method is to use PM and DRAM in parallel,as shown in figure 3. In PC-DB, we choose the second method, which uses DRAM as the cache of outstanding transaction version instead of PM.
 \begin{figure}
     \centering
-    \includegraphics[width=0.36\paperwidth]{USENIX/figure/PM_DRAM.png}
+    \includegraphics[width=0.36\paperwidth]{figure/PM_DRAM.png}
     \caption{Structure of two PM and DRAM mixing methods}
     \label{fig:throughput}
 \end{figure}
@@ -13,7 +13,7 @@ Figure 4 shows the algorithm of the Optimistic Concurrency Control of RocksDB. D
 We use DRAM to store the oustanding transaction versions, but there is another problem when validating the version in the validation phase of OCC: when validating, whether PC-DB should first search the DRAM for the lastest version of records, or it should first search the PM for the version? If the PC-DB first search the DRAM for the lastrst version, we should make sure the version of the records in the DRAM must be the latest all the time. In such a situation, when a transaction want to commit, it should first insert or update the version of the records in the DRAM, and then commit itself.In this period, it should get a lock to avoid other transactions update the versions of the record in the meanwhile. Also, to avoid the transaction is aborted after it update the versions of the records and before it commit itself, PC-DB should keep the log, and recover the version in the DRAM based on the log when the transaction is aborted at this time. The lock and the log will be the performance bottleneck if there are many transactions racing in the system. Thus, the validation strategy of the OCC in PC-DB is: to validate the version in the read set during the commit phase in OCC, when the version cannot be retrieved in the persistent memory, PC-DB will retrieve  the key in the  DRAM-based cache and obtain the corresponding version if the key exists in the DRAM. However, if the key is not in the DRAM, PC-DB will set the transaction retry after a period of time, and use a background thread to fetch the lasted version of the key from the disk, rather than just abort the transaction. 
 \begin{figure}
     \centering
-    \includegraphics[width=0.36\paperwidth]{USENIX/figure/algorithm.png}
+    \includegraphics[width=0.36\paperwidth]{figure/algorithm.png}
     \caption{Algorithm of the Optimistic Concurrency Control}
     \label{fig:OCCValidation}
 \end{figure}
