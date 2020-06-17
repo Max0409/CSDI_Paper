@@ -1,16 +1,12 @@
-\section{Persistent Memtable}
-
-This section presents the design and implementation of our work PC-DB, figure\ref{fig:structure} 
-
+\section{Design and Implementation of PC-DB}
 
     \begin{figure}
         \centering
-        \includegraphics[width=0.36\paperwidth]{figure/structure.png}
+        \includegraphics[width=0.36\paperwidth]{figure/structure.pdf}
         \caption{PC-DB architecture.}
         \label{fig:structure}
     \end{figure}
-shows the overall system architecture of PC-DB. 
-PC-DB makes a trade-off between the performance and the consistency, it leverages PM to store MemTable and Immutable Memtable. 
+This section presents the design and implementation of our work PC-DB, Figure~\ref{fig:structure} shows the overall system architecture of PC-DB. PC-DB makes a trade-off between the performance and the consistency, it leverages PM to store MemTable and Immutable Memtable. 
 In this way, the Memtable and Immutable Memtable are persistent ,thus eliminating the write ahead log(WAL). 
 RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, 
 so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
