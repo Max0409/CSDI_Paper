@@ -1,0 +1,79 @@
+\section{Design and Implementation of PC-DB}
+
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.36\paperwidth]{figure/structure.pdf}
+        \caption{PC-DB architecture.}
+        \label{fig:structure}
+    \end{figure}
+This section presents the design and implementation of our work PC-DB, Figure~\ref{fig:structure} shows the overall system architecture of PC-DB. PC-DB makes a trade-off between the performance and the consistency, it leverages PM to store MemTable and Immutable Memtable. 
+In this way, the Memtable and Immutable Memtable are persistent ,thus eliminating the write ahead log(WAL). 
+RocksDB ~\cite{RocksDB} by default disables the WAL in order to provide better performance, 
+so persistent Memtable and immutable Memtable in PC-DB will provide stronger durability and consistency upon system failures.
+
+RocksDB adopts OCC for transaction serialization.
+For OCC, verification of records on disk is slow due to the multiple levels on the disk. 
+RocksDB uses the minimum sequence number in memory and global sequence to determine whether to validate in memory. 
+If the sequence is not in memory, the transaction will abort to avoid disk access.
+In order to optimize the read amplification problem and reduce the probability of transaction abort, 
+we use DRAM-based cache to maintain the sequence number of outstanding transactions, 
+so that we only need to validate the sequence number in PM and DRAM in the validation phase instead of serching disk.
+
+
+
+
+\subsection{Persistent MemTable}
+In RocksDB, the MemTable is a skiplist stored in DRAM, which is not persistent. 
+It adopts a Write Ahead Log(WAL) for system consistency.
+WAL includes the key -value pairs ,version and checksum,which is sequentially appended in the persistent storage. 
+However, the overheads of WAL become the bottleneck of write operations and it takes rather long time to recover from crash since it scans long WAL for recovery.
+
+Based on the above problems, we adopt persistent memory for optimization. 
+The Memtable is stored in persistent memory ,which avoids the overheads of WAL for consistency and durability. 
+The MemTable is a persistent skiplist, which is the same data structure in  RocksDB. As we have talked before, the PM support atomic writes of 8 bytes, and in the skiplist,
+ operations like inseration, update, and deletion can be done with a logical inseration operation.
+We adopt  $mfence()$ to achieve instruction serialization and $clflush()$ to guarantee that data in cache is flushed into persistent memory and can be recovered under failure. 
+Algorithm 1 shows the insert operation. Other operations such as update and delete can also be achieved by logical insert operation.
+
+To put a KV pair into the PC-DB, PC-DB inserts the KV pair along with its version into the MemTable. 
+When the MemTable is full,PC-DB will make it  immutable, and create a new MemTable. The KV pairs in the Immutable MemTable will be flushed to the SSTable in $L_0$ and compacted  to the SSTable in the lower level , which is the same as RocksDB.
+
+
+\begin{algorithm}[t]
+\caption{Insert(key, value, version,preNode)} %算法的名字
+
+
+currentNode:=new Node(key,value,version);
+
+mfence();
+
+currentNode.next=preNode.next;
+
+clflush(currentNode);
+
+mfence();
+
+preNode.next:=currentNode;
+
+clflush(preNode.next);
+
+mfence();
+
+\end{algorithm}
+
+Once the system fails, 
+the skiplist can be recovered  by locating the root of skiplist, 
+the address of which is stored in the MANIFEST file. 
+The PC-DB will also flush the Immutable MemTable if there exits one.
+Because the data has already stored in persistent memory,it will be quick compared with recovering from WAL.
+
+
+\input{DRAM-based_Cache}
+    
+\subsection{DRAM Buffer Management}
+If PC-DB commits a transaction, it will add the new records' version in the DRAM. Once the DRAM is full, there are several existing strategies to evict the records in the DRAM. One very straight way is to evict the records as soon as the accessing transaction is committed. 
+However, if there are other transactions operating on the same records in the meanwhile, they has to wait for the background thread to fetch the versions of the records back to the DRAM, which will take rather a long time. Also, we can  add a reference counter to each of these records in the DRAM. If one transaction makes operations on the record, the reference counter will add one, at the same time, if one transaction is committed, the reference counter of the records it operates on will subtract one. When we need to expel some records, we can evict the records whose reference count is zero. However, this method will transform the read operation into a write operation, which costs a lot. To solve this problem, PC-DB has two approaches. One straight and effective way is to add a valid period for each of the record in the DRAM. When we need to evict some records, we choose these records who are time out. 
+
+Our second approach to evict record is based on the the page swap policy. To manage data buffer, there are many algorithms. The most commonly used algorithm is the LRU algorithm that is based on the locality for all the data accesses: if some data is accessed once, it will be accessed again with high possibility. We can use the LRU stack to store the information of locality, which is also called "recency". When some data is accessed, the LRU stack will record the data access information. In the LRU stack, the entry in the top is the most recent accessed and the entry in the bottom is the least recent accessed (LRU). Thus if we want to evit some entries, the entries in the bottom of the LRU stack will be evicted. If we use this data access pattern, the locality will be made good use of. However, the LRU page swap policy also has some shortcommings: (1)when we make a sequential scans, every record will be accessed only once. In such a situation, there is no locality, because we won`t access a record again after we access it. (2) Sometimes we can access some blocks of data again and again. In this data access pattern, where the data we access in one route is larger than the buffer size, the LRU page swap policy will always evicts the blocks that will be accessed soon in the next loop. (3) There can be multiple processes in the machine, and each of them has its own probability for data re-accesses, LRU can not know the possibility of their data access pattern. 
+
+Our second approach to evict records in the DRAM uses the LIRS algorithm, which performs better than the LRU algorithm. The pages in the DRAM are divided into two kinds: the cold pages and the hot pages. The division is based on the recent operation frequency. When a new record needs to enter into the DRAM but there is no free space, PC-DB chooses a cold page and migrate the page that contains the new records to replace the cold page. In order to divide the pages in DRAM into cold pages and hot pages, LIRS maintains two sets: High Inter-reference Recency set and Low Inter-reference Recency set. Low Inter-reference Recency set contains the pages that are operated on (read and write) frequently within a period of time, While High Inter-reference Recency set contains the cold pages. In the LIRS algorithm, two parameters, IRR(inter-reference recency) and Recency, are used . IRR is the last two visit intervals of a page, and Recency is how many other pages have been visited since the last visit of the page. The IRR and Recency parameters do not contain the number of duplicate pages because the repeated calculation of the page does not have much effect on the priority of current page. The division of High Inter-reference Recency set and Low Inter-reference Recency set is based on the IRR, and if two pages have the same IRR, the page with the larger Recency is replaced. LIRS algorithm use stack S and list Q to manage the two set. Stack S is used to maintain the hot pages and the potential hot pages, and List Q is used to link all the cold pages. In this way, the three LRU issues, which are talked above, are addressed. 
