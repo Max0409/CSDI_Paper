@@ -256,6 +256,55 @@ breakthrough-memory-technology/}}
   \url{https://software.intel.com/en-us/persistent-memory}
   }
 }
+@InProceedings{skimpystash,
+author = {Debnath, Biplob and Sengupta, Sudipta and Li, Jin},
+title = {SkimpyStash: RAM Space Skimpy Key-Value Store on Flash},
+booktitle = {ACM SIGMOD},
+year = {2011},
+month = {June},
+abstract = {We present SkimpyStash, a RAM space skimpy key-value store on flash, designed for high throughput server applications. The distinguishing feature of SkimpyStash is the design goal of extremely low RAM footprint at about 1 (+/- 0.5) byte per key-value pair, which is more aggressive than earlier designs. By being RAM space frugal, SkimpyStash can accommodate larger flash drive capacities for storing and indexing key-value pairs. SkimpyStash uses a hash table directory in RAM to index key-value pairs stored in a log-structure on flash. To break the barrier of a flash pointer (say, 4 bytes) worth of RAM overhead per key, it "moves" most of the pointers that locate each key-value pair from RAM to flash itself. This is realized by (i) resolving hash table collisions using linear chaining, where multiple keys that resolve (collide) to the same hash table bucket are chained in a linked list, and (ii) storing the linked lists on flash itself with a pointer in each hash table bucket in RAM pointing to the beginning record of the chain on flash, hence incurring multiple flash reads per lookup. Two further techniques are used to improve performance: (iii) two-choice based load balancing to reduce wide variation in bucket sizes (hence, chain lengths and associated lookup times), and a bloom filter in each hash table directory slot in RAM to disambiguate the choice during lookup, and (iv) compaction procedure to pack bucket chain records contiguously onto flash pages so as to reduce flash reads during lookup. The average bucket size is the critical design parameter that serves as a powerful knob for making a continuum of tradeoffs between low RAM usage and low lookup latencies.
+
+SkimpyStash can be used as a high throughput persistent key-value storage layer for a broad range of server class applications. We use real-world data traces from two data center applications, namely, Xbox LIVE Primetime online multi-player game and inline storage deduplication, to drive and evaluate the design of SkimpyStash on commodity server platforms. SkimpyStash provides throughputs from few 10,000s to upwards of 100,000 get-set operations/sec on the evaluated applications.},
+url = {https://www.microsoft.com/en-us/research/publication/skimpystash-ram-space-skimpy-key-value-store-on-flash/},
+edition = {ACM SIGMOD},
+}
+
+@inproceedings{SILT,
+author = {Lim, Hyeontaek and Fan, Bin and Andersen, David and Kaminsky, Michael},
+year = {2011},
+month = {10},
+pages = {1-13},
+title = {SILT: A memory-efficient, high-performance key-value store},
+journal = {SOSP'11 - Proceedings of the 23rd ACM Symposium on Operating Systems Principles},
+doi = {10.1145/2043556.2043558}
+}
+@inproceedings{Wang,
+author = {Wang, Peng and Sun, Guangyu and Jiang, Song and Ouyang, Jian and Lin, Shiding and Zhang, Chen and Cong, Jason},
+title = {An Efficient Design and Implementation of LSM-Tree Based Key-Value Store on Open-Channel SSD},
+year = {2014},
+isbn = {9781450327046},
+publisher = {Association for Computing Machinery},
+address = {New York, NY, USA},
+url = {https://doi.org/10.1145/2592798.2592804},
+doi = {10.1145/2592798.2592804},
+booktitle = {Proceedings of the Ninth European Conference on Computer Systems},
+articleno = {16},
+numpages = {14},
+keywords = {log-structured merge tree, solid state disk, flash, key-value store},
+location = {Amsterdam, The Netherlands},
+series = {EuroSys ’14}
+} 
+@inproceedings {VT-tree,
+	author = {Pradeep J. Shetty and Richard P. Spillane and Ravikant R. Malpani and Binesh Andrews and Justin Seyster and Erez Zadok},
+	title = {Building Workload-Independent Storage with VT-Trees},
+	booktitle = {Presented as part of the 11th {USENIX} Conference on File and Storage Technologies ({FAST} 13)},
+	year = {2013},
+	isbn = {978-1-931971-99-7},
+	address = {San Jose, CA},
+	pages = {17--30},
+	url = {https://www.usenix.org/conference/fast13/technical-sessions/presentation/shetty},
+	publisher = {{USENIX}},
+}
 \end{filecontents}
 
 %-------------------------------------------------------------------------------

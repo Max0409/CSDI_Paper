@@ -9,8 +9,8 @@ SILT reduces the use of DRAM and maintains a sorted log index in memory by split
 To conclude, these work has increased throughput through batch processing and adding software layers, 
 thus enhancing sequencing.
 
-Some previous work has redesigned LSMs for SSD. Wisckey\cite{Wisckey} redesigned LSMs to reduce read / write amplification and use SSD bandwidth. 
+Some previous work has redesigned LSMs for SSD. Wisckey~\cite{WiscKey} redesigned LSMs to reduce read / write amplification and use SSD bandwidth. 
 VT-tree\cite{VT-tree} tree design proposes a file system and user level key value storage, which is suitable for workload independent storage. Wang et al.\cite{Wang} exposed I / O channel information of SSDs to leveldb to utilize parallel bandwidth.
 
-NoveLSM\cite{NoveLSM} is a persistent KV storage system based on LSM, which aims to utilize non-volatile memory and provide low latency and high throughput for applications. 
+NoveLSM\cite{DBLP:conf/usenix/KannanBGAA18} is a persistent KV storage system based on LSM, which aims to utilize non-volatile memory and provide low latency and high throughput for applications. 
 It stores the the MemTable and Immutable MemTable in both DRAM and PM for performance and better recovery. 
