@@ -41,10 +41,10 @@ In PC-DB, DRAM is introduced as the cache.
 We use the map data structure to store the outstanding transaction version, 
 and we use the App Direct Mode of the Intel OPTANE DC Persistent Memory to store the map in the DRAM. 
 After PC-DB commits a transaction, it should update or add the corresponding records’versions in the DRAM. 
-We use DRAM to store the oustanding transaction versions, 
+We use DRAM to store the outstanding transaction versions, 
 but there is another problem when validating the version in the validation phase of OCC: when validating, 
-should PC-DB first search the DRAM for the lastest version of records, or  should it first search the PM for the version. 
-If the PC-DB first search the DRAM for the lastrst version, we should make sure the version of the records in the DRAM must be the latest all the time. 
+should PC-DB first search the DRAM for the latest version of records, or  should it first search the PM for the version. 
+If the PC-DB first search the DRAM for the latest version, we should make sure the version of the records in the DRAM must be the latest all the time. 
 In such situation, when a transaction wants to commit, it should first insert or update the version of the records in the DRAM, 
 and then commit .In this period, it should get a lock to avoid other transactions update the versions of the record at the same time. Also, to avoid the situations that if a transaction is aborted after it update the versions of the records 
 and before it commits, PC-DB should keep the log, and recover the version in the DRAM based on the log when the transaction is aborted at this time. 
